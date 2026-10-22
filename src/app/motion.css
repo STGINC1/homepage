@@ -1,0 +1,540 @@
+/*
+ * Motion system.
+ * Scroll effects use CSS scroll-driven animations: zero JavaScript, run on the
+ * compositor. Browsers without support show content statically, and the tiny
+ * RevealFallback component adds a light IntersectionObserver version.
+ * Everything is disabled for prefers-reduced-motion.
+ */
+
+@property --count {
+  syntax: "<integer>";
+  initial-value: 0;
+  inherits: false;
+}
+
+/* ---------- Keyframes ---------- */
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+}
+
+@keyframes slide-in-left {
+  from {
+    opacity: 0;
+    transform: translateX(-48px);
+  }
+}
+
+@keyframes slide-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(48px);
+  }
+}
+
+/* Big words slide sideways as their band crosses the screen. */
+@keyframes band-left {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-30%);
+  }
+}
+
+@keyframes band-right {
+  from {
+    transform: translateX(-30%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+/* Decorative shape on inner-page banners: drifts and turns while you scroll. */
+@keyframes spin-drift {
+  to {
+    transform: translateY(18vh) rotate(60deg);
+  }
+}
+
+@keyframes zoom-in {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+}
+
+@keyframes word-light {
+  from {
+    opacity: 0.16;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes grow-down {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes count-up {
+  from {
+    --count: 0;
+  }
+  to {
+    --count: var(--target);
+  }
+}
+
+@keyframes progress-grow {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes header-solidify {
+  from {
+    background-color: transparent;
+    box-shadow: none;
+    backdrop-filter: none;
+  }
+  to {
+    background-color: rgb(11 15 21 / 0.82);
+    box-shadow: 0 1px 0 rgb(20 179 245 / 0.14);
+    backdrop-filter: blur(14px) saturate(1.4);
+  }
+}
+
+@keyframes drift-down {
+  from {
+    transform: none;
+    opacity: 1;
+  }
+  to {
+    transform: translateY(14vh);
+    opacity: 0;
+  }
+}
+
+/* Hero photo: settles in on load, then pushes in as you scroll away. */
+@keyframes ken-burns {
+  from {
+    transform: scale(1.14);
+  }
+  to {
+    transform: scale(1.03);
+  }
+}
+
+@keyframes hero-push {
+  to {
+    transform: scale(1.16) translateY(5%);
+  }
+}
+
+@keyframes dim-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 0.7;
+  }
+}
+
+/* Headline lines slide up out of a mask. Movement only, so text paints at once. */
+@keyframes line-up {
+  from {
+    transform: translateY(108%);
+  }
+}
+
+@keyframes live-ping {
+  from {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  to {
+    transform: scale(3);
+    opacity: 0;
+  }
+}
+
+@keyframes scroll-cue {
+  0% {
+    transform: translateY(-100%);
+  }
+  60%,
+  100% {
+    transform: translateY(100%);
+  }
+}
+
+@keyframes scroll-left {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes pulse-ring {
+  from {
+    transform: scale(0.4);
+    opacity: 0.9;
+  }
+  to {
+    transform: scale(2.6);
+    opacity: 0;
+  }
+}
+
+@keyframes dash-flow {
+  to {
+    stroke-dashoffset: -24;
+  }
+}
+
+@keyframes hero-enter {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+    filter: blur(6px);
+  }
+}
+
+@keyframes hero-rise {
+  from {
+    transform: translateY(28px);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes fade-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes page-rise {
+  from {
+    transform: translateY(16px);
+  }
+}
+
+/* ---------- Static defaults (no motion) ---------- */
+
+.site-header {
+  background-color: rgb(11 15 21 / 0.82);
+  box-shadow: 0 1px 0 rgb(20 179 245 / 0.14);
+  backdrop-filter: blur(14px) saturate(1.4);
+}
+
+.scroll-progress {
+  transform: scaleX(0);
+}
+
+.hero-dim {
+  opacity: 0;
+}
+
+.line-mask {
+  display: block;
+  overflow: hidden;
+  /* Room for descenders and the tight line-height */
+  padding-bottom: 0.06em;
+  margin-bottom: -0.06em;
+}
+
+.line-in {
+  display: block;
+}
+
+.count-num {
+  --count: var(--target);
+  counter-reset: count var(--count);
+}
+
+.count-num::after {
+  content: counter(count);
+}
+
+/* ---------- Time-based motion ---------- */
+
+@media (prefers-reduced-motion: no-preference) {
+  .hero-enter {
+    animation: hero-enter 0.9s var(--ease-out-expo) both;
+    animation-delay: calc(var(--d, 0) * 110ms + 250ms);
+  }
+
+  .hero-rise {
+    animation: hero-rise 1s var(--ease-out-expo) both;
+  }
+
+  .line-in {
+    animation: line-up 1.15s var(--ease-out-expo) both;
+    animation-delay: calc(var(--d, 0) * 120ms + 120ms);
+  }
+
+  .hero-kenburns {
+    animation: ken-burns 2.8s var(--ease-out-expo) both;
+  }
+
+  .live-dot {
+    animation: live-ping 1.8s ease-out infinite;
+  }
+
+  .scroll-cue {
+    animation: scroll-cue 2.2s var(--ease-out-expo) infinite;
+  }
+
+  .marquee-track {
+    animation: scroll-left 38s linear infinite;
+  }
+
+  .marquee:hover .marquee-track {
+    animation-play-state: paused;
+  }
+
+  .pulse-ring {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: pulse-ring 2.4s ease-out infinite;
+  }
+
+  .lane-flow {
+    animation: dash-flow 1.2s linear infinite;
+  }
+}
+
+/* ---------- Scroll-driven motion ---------- */
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    /*
+     * "backwards" fill: the start state applies before the range, and once the
+     * reveal ends the element returns to its own styles, so hover lifts work.
+     * Fixed scroll distance, so tall and short elements reveal at the same pace.
+     */
+    .reveal,
+    .reveal-left,
+    .reveal-right,
+    .reveal-zoom {
+      animation: rise-in linear backwards;
+      animation-timeline: view();
+      animation-range: entry calc(var(--d, 0) * 50px) entry calc(240px + var(--d, 0) * 50px);
+    }
+
+    .reveal-left {
+      animation-name: slide-in-left;
+    }
+
+    .reveal-right {
+      animation-name: slide-in-right;
+    }
+
+    .band-row-a,
+    .band-row-b {
+      animation: band-left linear both;
+      animation-timeline: view();
+      animation-range: cover 0% cover 100%;
+    }
+
+    .band-row-b {
+      animation-name: band-right;
+    }
+
+    .hero-spin {
+      animation: spin-drift linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0 100vh;
+    }
+
+    .reveal-zoom {
+      animation-name: zoom-in;
+    }
+
+    .scroll-progress {
+      animation: progress-grow linear both;
+      animation-timeline: scroll(root);
+    }
+
+    .site-header {
+      animation: header-solidify linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0 140px;
+    }
+
+    .hero-media {
+      animation: hero-push linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0 100vh;
+    }
+
+    .hero-dim {
+      animation: dim-in linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0 90vh;
+    }
+
+    .hero-drift {
+      animation: drift-down linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0 85vh;
+    }
+
+    /* Story paragraph lights up word by word as it crosses the viewport. */
+    .story {
+      view-timeline-name: --story;
+    }
+
+    .story-word {
+      animation: word-light linear both;
+      animation-timeline: --story;
+      animation-range: cover calc(28% + var(--i) / var(--n) * 30%) cover calc(32% + var(--i) / var(--n) * 30%);
+    }
+
+    /* Route line draws as the "How it works" section scrolls by. */
+    .route-section {
+      view-timeline-name: --route;
+    }
+
+    .route-line {
+      animation: grow-down linear both;
+      animation-timeline: --route;
+      animation-range: contain 0% contain 85%;
+    }
+
+    .count-num {
+      animation: count-up linear both;
+      animation-timeline: view();
+      animation-range: entry 10% cover 45%;
+    }
+  }
+}
+
+/*
+ * Fallback for browsers without scroll-driven animations (ScrollEffects adds
+ * .sda-fallback to <html> and feeds scroll progress in as CSS variables).
+ */
+.sda-fallback .reveal,
+.sda-fallback .reveal-left,
+.sda-fallback .reveal-right,
+.sda-fallback .reveal-zoom {
+  transition:
+    opacity 0.8s var(--ease-out-expo),
+    transform 0.8s var(--ease-out-expo),
+    box-shadow 0.4s var(--ease-out-expo);
+}
+
+.sda-fallback .reveal:not(.is-visible) {
+  opacity: 0;
+  transform: translateY(28px);
+}
+
+.sda-fallback .reveal-left:not(.is-visible) {
+  opacity: 0;
+  transform: translateX(-48px);
+}
+
+.sda-fallback .reveal-right:not(.is-visible) {
+  opacity: 0;
+  transform: translateX(48px);
+}
+
+.sda-fallback .reveal-zoom:not(.is-visible) {
+  opacity: 0;
+  transform: scale(0.92);
+}
+
+.sda-fallback .scroll-progress {
+  transform: scaleX(var(--sp, 0));
+}
+
+.sda-fallback .site-header {
+  transition:
+    background-color 0.3s,
+    box-shadow 0.3s;
+}
+
+.sda-fallback:not(.is-scrolled) .site-header {
+  background-color: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+.sda-fallback .hero-media {
+  transform: scale(calc(1 + 0.16 * var(--hp, 0))) translateY(calc(5% * var(--hp, 0)));
+}
+
+.sda-fallback .hero-dim {
+  opacity: calc(0.7 * var(--hp, 0));
+}
+
+.sda-fallback .hero-drift {
+  transform: translateY(calc(14vh * var(--hd, 0)));
+  opacity: calc(1 - var(--hd, 0));
+}
+
+.sda-fallback .hero-spin {
+  transform: translateY(calc(18vh * var(--hp, 0))) rotate(calc(60deg * var(--hp, 0)));
+}
+
+.sda-fallback .story-word {
+  opacity: clamp(0.16, calc((var(--story-p, 1) - 0.28 - var(--i) / var(--n) * 0.3) / 0.04), 1);
+}
+
+.sda-fallback .route-line {
+  transform: scaleY(var(--route-p, 1));
+}
+
+.sda-fallback .band-row-a {
+  transform: translateX(calc(-30% * var(--band-p, 0)));
+}
+
+.sda-fallback .band-row-b {
+  transform: translateX(calc(-30% + 30% * var(--band-p, 0)));
+}
+
+.sda-fallback .count-num:not(.is-visible) {
+  --count: 0;
+}
+
+.sda-fallback .count-num.is-visible {
+  animation: count-up 1.6s var(--ease-out-expo) both;
+}
+
+/* ---------- Page transitions (React <ViewTransition>) ---------- */
+
+::view-transition-old(.page-exit) {
+  animation: 160ms ease-in both fade-out;
+}
+
+::view-transition-new(.page-enter) {
+  animation:
+    260ms ease-out 80ms both fade-in,
+    420ms var(--ease-out-expo) 80ms both page-rise;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(*),
+  ::view-transition-new(*),
+  ::view-transition-group(*) {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+  }
+}

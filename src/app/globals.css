@@ -1,0 +1,299 @@
+@import "tailwindcss";
+@import "./motion.css";
+
+@theme {
+  /* STG brand: black, white and the logo's blue gradient (sampled from public/logo.jpg) */
+  --color-ink: #0b0f15; /* logo black, a touch cool */
+  --color-ink-2: #111722;
+  --color-ink-3: #1a2230;
+  --color-lapis: #014dbd; /* deep end of the "T" */
+  --color-brand: #0590e1; /* middle of the "T" */
+  --color-brand-bright: #14b3f5; /* bright end of the "T" */
+  --color-brand-deep: #0a6cc4; /* text-safe blue on white (4.7:1+) */
+  --color-accent: #14b3f5; /* highlights on dark backgrounds */
+  --color-accent-deep: #0a6cc4;
+  --color-paper: #ffffff;
+  --color-paper-2: #f1f4f8;
+  --color-stone: #556070;
+
+  --font-display: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@layer base {
+  html {
+    background: var(--color-ink);
+    color-scheme: dark light;
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+
+  body {
+    background: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3,
+  .font-display {
+    font-family: var(--font-display);
+    font-stretch: 112%;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  ::selection {
+    background: var(--color-accent);
+    color: var(--color-ink);
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--color-accent);
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+
+  [id] {
+    scroll-margin-top: 6rem;
+  }
+
+  /* Slide-in animations start off to the side; never let that cause sideways
+     scrolling. Set on <main>, not <body>: body overflow is handed to the
+     viewport. "clip" (unlike "hidden") keeps position: sticky working. */
+  main {
+    overflow-x: clip;
+  }
+}
+
+@layer components {
+  .container-x {
+    width: 100%;
+    max-width: 76rem;
+    margin-inline: auto;
+    padding-inline: 1rem;
+  }
+
+  @media (min-width: 640px) {
+    .container-x {
+      padding-inline: 1.5rem;
+    }
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-brand-deep);
+  }
+
+  .eyebrow::before {
+    content: "";
+    width: 1.75rem;
+    height: 2px;
+    background: currentColor;
+    border-radius: 2px;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 3rem;
+    padding: 0.75rem 1.4rem;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 0.975rem;
+    transition:
+      transform 0.25s var(--ease-out-expo),
+      background-color 0.2s,
+      box-shadow 0.25s,
+      color 0.2s;
+  }
+
+  .btn:hover {
+    transform: translateY(-2px);
+  }
+
+  .btn:active {
+    transform: translateY(0);
+  }
+
+  /* Primary action: the logo's blue gradient with white text (5:1+ contrast). */
+  .btn-primary {
+    background: linear-gradient(135deg, var(--color-brand-deep) 0%, var(--color-lapis) 100%);
+    color: #fff;
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.18),
+      0 10px 30px -10px rgb(5 144 225 / 0.75);
+  }
+
+  .btn-primary:hover {
+    background: linear-gradient(135deg, #0b7bd8 0%, #0a56c2 100%);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.22),
+      0 16px 40px -12px rgb(20 179 245 / 0.8);
+  }
+
+  .btn-ghost {
+    color: var(--color-paper);
+    box-shadow: inset 0 0 0 1.5px rgb(255 255 255 / 0.35);
+  }
+
+  .btn-ghost:hover {
+    box-shadow: inset 0 0 0 1.5px var(--color-brand-bright);
+    color: var(--color-brand-bright);
+  }
+
+  .btn-glass {
+    color: var(--color-paper);
+    background: rgb(255 255 255 / 0.08);
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.22);
+    backdrop-filter: blur(10px);
+  }
+
+  .btn-glass:hover {
+    background: rgb(255 255 255 / 0.16);
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.45);
+  }
+
+  /* Film grain: one tiny SVG noise tile, blended over photography. */
+  .grain {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
+    opacity: 0.16;
+    mix-blend-mode: overlay;
+  }
+
+  .btn-dark {
+    background: var(--color-ink);
+    color: var(--color-paper);
+  }
+
+  .btn-dark:hover {
+    background: var(--color-ink-3);
+  }
+
+  .btn-outline-dark {
+    color: var(--color-ink);
+    box-shadow: inset 0 0 0 1.5px rgb(11 15 21 / 0.25);
+  }
+
+  .btn-outline-dark:hover {
+    box-shadow: inset 0 0 0 1.5px var(--color-ink);
+  }
+
+  .btn-light {
+    background: #fff;
+    color: var(--color-ink);
+    box-shadow: 0 10px 30px -12px rgb(11 15 21 / 0.45);
+  }
+
+  .btn-light:hover {
+    background: #eaf6fe;
+  }
+
+  .btn-outline-light {
+    color: #fff;
+    box-shadow: inset 0 0 0 1.5px rgb(255 255 255 / 0.5);
+  }
+
+  .btn-outline-light:hover {
+    box-shadow: inset 0 0 0 1.5px #fff;
+    background: rgb(255 255 255 / 0.08);
+  }
+
+  /* Eight-point star tile, a nod to Samarkand's Registan mosaics. */
+  .tile-pattern {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='72' height='72' viewBox='0 0 72 72'%3E%3Cg fill='none' stroke='%2314b3f5' stroke-width='1'%3E%3Crect x='22' y='22' width='28' height='28'/%3E%3Crect x='22' y='22' width='28' height='28' transform='rotate(45 36 36)'/%3E%3Cpath d='M0 0l16 16M72 0L56 16M0 72l16-16M72 72L56 56'/%3E%3C/g%3E%3C/svg%3E");
+    background-size: 72px 72px;
+  }
+
+  .card {
+    position: relative;
+    border-radius: 1.5rem;
+    background: white;
+    box-shadow:
+      0 1px 0 rgb(11 15 21 / 0.04),
+      0 20px 40px -24px rgb(11 15 21 / 0.25);
+    transition:
+      transform 0.4s var(--ease-out-expo),
+      box-shadow 0.4s var(--ease-out-expo);
+  }
+
+  .card:hover {
+    transform: translateY(-6px);
+    box-shadow:
+      0 1px 0 rgb(11 15 21 / 0.04),
+      0 30px 60px -28px rgb(11 15 21 / 0.4);
+  }
+
+  .card-dark {
+    background: linear-gradient(160deg, var(--color-ink-3), var(--color-ink-2));
+    box-shadow: inset 0 0 0 1px rgb(20 179 245 / 0.12);
+  }
+
+  .card-dark:hover {
+    box-shadow:
+      inset 0 0 0 1px rgb(20 179 245 / 0.45),
+      0 30px 60px -30px rgb(5 144 225 / 0.5);
+  }
+
+  .text-gradient {
+    /* Same direction as the logo's "T": light sky blue into brand blue */
+    background: linear-gradient(100deg, #8fdcfc 0%, var(--color-brand-bright) 45%, var(--color-brand) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .field {
+    width: 100%;
+    min-height: 3rem;
+    border-radius: 0.85rem;
+    border: 1.5px solid var(--color-paper-2);
+    background: white;
+    padding: 0.7rem 0.95rem;
+    font-size: 1rem;
+    color: var(--color-ink);
+    transition:
+      border-color 0.2s,
+      box-shadow 0.2s;
+  }
+
+  .field:focus {
+    outline: none;
+    border-color: var(--color-brand);
+    box-shadow: 0 0 0 4px rgb(5 144 225 / 0.18);
+  }
+
+  .field[aria-invalid="true"] {
+    border-color: #c2410c;
+  }
+}
+
+/*
+ * Note for future edits: never put `overflow: hidden` on a container that has
+ * scroll-animated children (.reveal*, .story, .band-row-*). Hidden overflow
+ * makes the container its own scroll box, so view() timelines track it instead
+ * of the page and the animation freezes. Use `overflow: clip` (Tailwind
+ * `overflow-clip`) there instead.
+ */
