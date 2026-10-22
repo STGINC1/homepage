@@ -53,13 +53,11 @@ export default function ApplyPage() {
         </div>
       </PageHero>
 
-      <section id="application" aria-labelledby="application-heading" className="py-16 sm:py-24">
-        <div className="container-x">
-          <h2 id="application-heading" className="sr-only">
-            Driver application
-          </h2>
-          <ApplicationEmbed />
-        </div>
+      <section id="application" aria-labelledby="application-heading" className="zeus-apply-bg">
+        <h2 id="application-heading" className="sr-only">
+          Driver application
+        </h2>
+        <ApplicationEmbed />
       </section>
 
       <section

@@ -297,3 +297,22 @@
  * of the page and the animation freezes. Use `overflow: clip` (Tailwind
  * `overflow-clip`) there instead.
  */
+
+/*
+ * Zeus application backdrop. The embedded form follows the visitor's OS theme
+ * (white in light mode, #0f1117 in dark mode), so the section around it uses
+ * the same colors and the form blends into the page edge to edge.
+ */
+.zeus-apply-bg {
+  --zeus-apply-bg: #ffffff;
+  --zeus-apply-fg: #64748b;
+  background-color: var(--zeus-apply-bg);
+  color: var(--zeus-apply-fg);
+}
+
+@media (prefers-color-scheme: dark) {
+  .zeus-apply-bg {
+    --zeus-apply-bg: #0f1117;
+    --zeus-apply-fg: #9ca3af;
+  }
+}
