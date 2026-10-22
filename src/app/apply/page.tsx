@@ -1,5 +1,5 @@
 import { ApplicationEmbed } from "@/components/apply/application-embed";
-import { ArrowIcon, CheckIcon, MailIcon, PhoneIcon } from "@/components/icons";
+import { ArrowIcon, MailIcon, PhoneIcon } from "@/components/icons";
 import { JsonLd } from "@/components/json-ld";
 import { PageHero } from "@/components/page-hero";
 import { PageTransition } from "@/components/page-transition";
@@ -15,14 +15,6 @@ export const metadata = pageMetadata({
     "Apply online to drive with Samarkand Transport Group in Mason, Ohio. Class A CDL drivers running all 48 states. Drivers are partners, not numbers.",
   path: "/apply",
 });
-
-const HAVE_READY = [
-  "Your Class A CDL details",
-  "Your DOT medical card",
-  "Addresses for the past 3 years",
-  "Employment history (up to 10 years for commercial driving jobs)",
-  "Accident and traffic violation history for the past 3 years",
-] as const;
 
 const STEPS = [
   {
@@ -62,48 +54,11 @@ export default function ApplyPage() {
       </PageHero>
 
       <section id="application" aria-labelledby="application-heading" className="py-16 sm:py-24">
-        <div className="container-x grid gap-10 lg:grid-cols-[18rem_1fr] lg:gap-14">
-          <aside className="lg:sticky lg:top-28 lg:self-start">
-            <SectionHeading
-              id="application-heading"
-              eyebrow="Before you start"
-              title="Have these ready"
-              intro="DOT rules require this for every CDL driver application."
-            />
-            <ul className="mt-6 space-y-3">
-              {HAVE_READY.map((item, index) => (
-                <li
-                  key={item}
-                  className="reveal-left flex items-start gap-3 text-sm font-semibold"
-                  style={cssVars({ "--d": index })}
-                >
-                  <span className="grid size-7 shrink-0 place-items-center rounded-full bg-brand/10 text-brand-deep">
-                    <CheckIcon className="size-4" />
-                  </span>
-                  <span className="pt-1">{item}</span>
-                </li>
-              ))}
-            </ul>
-            <div className="reveal mt-8 space-y-1 text-sm text-stone">
-              <p>Need help?</p>
-              <a
-                href={COMPANY.phone.href}
-                className="block font-semibold text-brand-deep underline underline-offset-2"
-              >
-                {COMPANY.phone.display}
-              </a>
-              <a
-                href={`mailto:${COMPANY.emails.fleet}?subject=Driver%20application%20question`}
-                className="block font-semibold text-brand-deep underline underline-offset-2"
-              >
-                {COMPANY.emails.fleet}
-              </a>
-            </div>
-          </aside>
-
-          <div className="min-w-0">
-            <ApplicationEmbed />
-          </div>
+        <div className="container-x">
+          <h2 id="application-heading" className="sr-only">
+            Driver application
+          </h2>
+          <ApplicationEmbed />
         </div>
       </section>
 
