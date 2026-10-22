@@ -4,11 +4,15 @@ interface PageTransitionProps {
   children: ReactNode;
 }
 
-/** Fades and lifts page content during client-side navigation. */
+/**
+ * Animates page content during client-side navigation (see motion.css).
+ * The single wrapper makes the page move as one piece instead of one
+ * snapshot per section.
+ */
 export function PageTransition({ children }: PageTransitionProps) {
   return (
     <ViewTransition enter="page-enter" exit="page-exit" default="none">
-      {children}
+      <div>{children}</div>
     </ViewTransition>
   );
 }

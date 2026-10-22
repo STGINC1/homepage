@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, ViewTransition } from "react";
 import { cssVars } from "@/lib/css-vars";
 import { COMPANY, NAV_LINKS } from "@/lib/site";
 import { CloseIcon, MenuIcon, PhoneIcon } from "./icons";
@@ -59,7 +59,9 @@ export function SiteHeader() {
                     >
                       {link.label}
                       {isActive && (
-                        <span className="absolute inset-x-3 -bottom-0.5 h-0.5 rounded-full bg-accent xl:inset-x-4" />
+                        <ViewTransition name="nav-indicator" share="nav-morph" default="none">
+                          <span className="absolute inset-x-3 -bottom-0.5 h-0.5 rounded-full bg-accent xl:inset-x-4" />
+                        </ViewTransition>
                       )}
                     </Link>
                   </li>
