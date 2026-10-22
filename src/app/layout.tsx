@@ -4,6 +4,7 @@ import { JsonLd } from "@/components/json-ld";
 import { ScrollEffects } from "@/components/scroll-effects";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
+import { SiteIntro, SiteIntroScript } from "@/components/site-intro";
 import { organizationJsonLd } from "@/lib/seo";
 import { COMPANY, SITE_URL } from "@/lib/site";
 import "./globals.css";
@@ -67,8 +68,17 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en-US" className={`${archivo.variable} ${inter.variable} antialiased`}>
+    <html
+      lang="en-US"
+      className={`${archivo.variable} ${inter.variable} antialiased`}
+      // The intro script adds a class to <html> before React loads.
+      suppressHydrationWarning
+    >
+      <head>
+        <SiteIntroScript />
+      </head>
       <body className="min-h-dvh">
+        <SiteIntro />
         <a
           href="#main"
           className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[60] focus:rounded-full focus:bg-accent focus:px-5 focus:py-3 focus:font-semibold focus:text-ink"

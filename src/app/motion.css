@@ -293,20 +293,22 @@
 @media (prefers-reduced-motion: no-preference) {
   .hero-enter {
     animation: hero-enter 0.7s var(--ease-out-expo) both;
-    animation-delay: calc(var(--d, 0) * 70ms + 80ms);
+    animation-delay: calc(var(--d, 0) * 70ms + 80ms + var(--intro-delay, 0ms));
   }
 
   .hero-rise {
     animation: hero-rise 0.8s var(--ease-out-expo) both;
+    animation-delay: var(--intro-delay, 0ms);
   }
 
   .line-in {
     animation: line-up 0.9s var(--ease-out-expo) both;
-    animation-delay: calc(var(--d, 0) * 80ms + 40ms);
+    animation-delay: calc(var(--d, 0) * 80ms + 40ms + var(--intro-delay, 0ms));
   }
 
   .hero-kenburns {
     animation: ken-burns 2s var(--ease-out-expo) both;
+    animation-delay: var(--intro-delay, 0ms);
   }
 
   .live-dot {

@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "./motion.css";
+@import "./intro.css";
 
 @theme {
   /* STG brand: black, white and the logo's blue gradient (sampled from public/logo.jpg) */

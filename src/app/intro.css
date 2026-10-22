@@ -1,0 +1,160 @@
+/*
+ * Site intro (first visit per session, see site-intro.tsx).
+ * Timeline: logo settles (0-0.7s), line draws across (0.3-1.05s), screen
+ * splits open along the line (1.1-1.9s). Page heroes wait --intro-delay so
+ * they animate in as the screen opens.
+ * Hidden for reduced motion and once the intro has been seen.
+ */
+
+.site-intro {
+  display: none;
+}
+
+:root {
+  --ease-in-out-expo: cubic-bezier(0.87, 0, 0.13, 1);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  :root:not(.intro-seen) {
+    --intro-delay: 1100ms;
+  }
+
+  :root:not(.intro-seen) .site-intro {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: grid;
+    place-items: center;
+    pointer-events: none;
+    animation: intro-gone 1ms linear 1.95s both;
+  }
+
+  .intro-panel {
+    position: absolute;
+    inset-inline: 0;
+    height: 50.5%;
+    background:
+      radial-gradient(70% 60% at 50% 100%, rgb(20 179 245 / 0.14), transparent 70%),
+      var(--color-ink);
+    will-change: transform;
+  }
+
+  .intro-panel-top {
+    top: 0;
+    animation: intro-open-up 0.8s var(--ease-in-out-expo) 1.1s both;
+  }
+
+  .intro-panel-bottom {
+    bottom: 0;
+    background:
+      radial-gradient(70% 60% at 50% 0%, rgb(20 179 245 / 0.14), transparent 70%),
+      var(--color-ink);
+    animation: intro-open-down 0.8s var(--ease-in-out-expo) 1.1s both;
+  }
+
+  .intro-brand {
+    position: absolute;
+    bottom: calc(50% + 1.75rem);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    animation: intro-brand-out 0.35s ease-in 1s both;
+  }
+
+  .intro-mark {
+    animation: intro-mark-in 0.8s var(--ease-out-expo) 0.1s both;
+  }
+
+  .intro-name {
+    line-height: 1;
+    letter-spacing: 0.08em;
+    border-left: 1px solid rgb(255 255 255 / 0.2);
+    padding-left: 1rem;
+    animation: intro-name-in 0.9s var(--ease-out-expo) 0.25s both;
+  }
+
+  .intro-line {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: min(26rem, 72vw);
+    height: 2px;
+    margin-left: calc(min(26rem, 72vw) / -2);
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--color-lapis), var(--color-brand-bright));
+    box-shadow: 0 0 18px rgb(20 179 245 / 0.7);
+    animation:
+      intro-line-draw 0.75s var(--ease-in-out-expo) 0.3s both,
+      intro-line-flash 0.5s ease-out 1.05s both;
+  }
+
+  .intro-tagline {
+    position: absolute;
+    top: calc(50% + 1.5rem);
+    animation:
+      intro-fade-in 0.6s ease-out 0.55s both,
+      intro-brand-out 0.35s ease-in 1s both;
+  }
+}
+
+@keyframes intro-mark-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.85);
+    filter: blur(10px);
+  }
+}
+
+@keyframes intro-name-in {
+  from {
+    opacity: 0;
+    letter-spacing: 0.6em;
+    filter: blur(6px);
+  }
+}
+
+@keyframes intro-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes intro-brand-out {
+  to {
+    opacity: 0;
+    transform: translateY(-10px);
+    filter: blur(4px);
+  }
+}
+
+@keyframes intro-line-draw {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+}
+
+/* Line stretches edge to edge and fades as the screen opens on it. */
+@keyframes intro-line-flash {
+  to {
+    transform: scaleX(4);
+    opacity: 0;
+  }
+}
+
+@keyframes intro-open-up {
+  to {
+    transform: translateY(-100%);
+  }
+}
+
+@keyframes intro-open-down {
+  to {
+    transform: translateY(100%);
+  }
+}
+
+@keyframes intro-gone {
+  to {
+    visibility: hidden;
+  }
+}
