@@ -46,6 +46,24 @@ describe("parseQuote", () => {
     const result = parseQuote({ ...VALID, pickupDate: "not-a-date" });
     expect(result.ok).toBe(false);
   });
+
+  it("treats SMS consent as opt-in: unchecked by default", () => {
+    const result = parseQuote(VALID);
+    if (!result.ok) throw new Error("fixture should be valid");
+    expect(result.data.smsConsent).toBe(false);
+  });
+
+  it("records SMS consent when the box is checked", () => {
+    const result = parseQuote({ ...VALID, smsConsent: "on" });
+    if (!result.ok) throw new Error("fixture should be valid");
+    expect(result.data.smsConsent).toBe(true);
+  });
+
+  it("asks for a phone number when SMS consent is checked without one", () => {
+    const result = parseQuote({ ...VALID, phone: "", smsConsent: "on" });
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(Object.keys(result.fieldErrors)).toEqual(["phone"]);
+  });
 });
 
 describe("formDataToObject", () => {
@@ -98,6 +116,25 @@ describe("formatQuoteText", () => {
     const text = formatQuoteText(result.data);
     expect(text).toContain("Company: —");
     expect(text).toContain("Pickup date: Flexible");
+    expect(text).toContain("SMS consent: No");
+  });
+
+  it("notes SMS consent so the opt-in is on record", () => {
+    const result = parseQuote({ ...VALID, smsConsent: "on" });
+    if (!result.ok) throw new Error("fixture should be valid");
+    expect(formatQuoteText(result.data)).toContain("SMS consent: Yes");
+  });
+});
+
+describe("SMS compliance text", () => {
+  it("uses the exact TCR wording", async () => {
+    const { SMS_CONSENT_TEXT, SMS_NO_SHARING_STATEMENT } = await import("./sms");
+    expect(SMS_NO_SHARING_STATEMENT).toBe(
+      "SMS opt-in and phone numbers collected for SMS communication purposes will not be shared with any third party and affiliates for marketing purposes.",
+    );
+    expect(SMS_CONSENT_TEXT).toBe(
+      `By checking this box, you agree to receive Conversational TEXT messages from ${COMPANY.legalName} at the phone number provided above. You may reply STOP to opt-out at any time. For assistance reply HELP. Messages and data rates may apply. Message frequency will vary.`,
+    );
   });
 });
 

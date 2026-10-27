@@ -4,7 +4,16 @@
  */
 
 export type QuoteField =
-  "name" | "company" | "email" | "phone" | "origin" | "destination" | "pickupDate" | "details" | "website";
+  | "name"
+  | "company"
+  | "email"
+  | "phone"
+  | "origin"
+  | "destination"
+  | "pickupDate"
+  | "details"
+  | "smsConsent"
+  | "website";
 
 export type FieldErrors = Partial<Record<QuoteField, string>>;
 

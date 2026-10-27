@@ -84,6 +84,9 @@ export const EMAIL_CONTACTS = [
   },
 ] as const;
 
-export const LEGAL_LINKS = [{ href: "/privacy", label: "Privacy Policy" }] as const;
+export const LEGAL_LINKS = [
+  { href: "/privacy", label: "Privacy Policy" },
+  { href: "/terms", label: "SMS Terms & Conditions" },
+] as const;
 
 export type NavHref = (typeof NAV_LINKS)[number]["href"];

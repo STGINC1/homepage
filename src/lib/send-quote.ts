@@ -33,6 +33,7 @@ export function formatQuoteText(quote: QuoteInput): string {
     ["Pickup", quote.origin],
     ["Delivery", quote.destination],
     ["Pickup date", quote.pickupDate || "Flexible"],
+    ["SMS consent", quote.smsConsent ? "Yes (checked the SMS opt-in box on the website form)" : "No"],
   ];
   const body = lines.map(([label, value]) => `${label}: ${value}`).join("\n");
   return `New quote request from the website\n\n${body}\n\nDetails:\n${quote.details || "—"}\n`;

@@ -1,12 +1,13 @@
-import type { ReactNode } from "react";
-import { MailIcon, PhoneIcon, PinIcon } from "@/components/icons";
-import { JsonLd } from "@/components/json-ld";
-import { PageHero } from "@/components/page-hero";
-import { PageTransition } from "@/components/page-transition";
-import { SectionTocChips, SectionTocSidebar } from "@/components/section-toc";
-import { cssVars } from "@/lib/css-vars";
-import { breadcrumbJsonLd, pageMetadata } from "@/lib/seo";
+import {
+  BulletList,
+  Callout,
+  InlineLink,
+  PolicyPage,
+  type PolicySection,
+} from "@/components/legal/policy-page";
+import { pageMetadata } from "@/lib/seo";
 import { COMPANY } from "@/lib/site";
+import { SMS_NO_SHARING_STATEMENT } from "@/lib/sms";
 
 export const metadata = pageMetadata({
   title: "Privacy Policy",
@@ -14,7 +15,7 @@ export const metadata = pageMetadata({
   path: "/privacy",
 });
 
-const EFFECTIVE_DATE = "October 21, 2026";
+const EFFECTIVE_DATE = "October 27, 2026";
 const PRIVACY_EMAIL = COMPANY.emails.admin;
 
 const COLLECTED = [
@@ -42,9 +43,9 @@ const SHARING = [
 
 const SMS_POINTS = [
   "We will use your number only for purposes related to your service, employment, or account status",
-  "We will not share your phone number or SMS consent data with third parties for marketing",
-  "You may receive reminders, updates, or alerts via SMS (frequency varies)",
-  "You can opt out anytime by replying STOP or ask for help by replying HELP",
+  "You may receive reminders, updates, or alerts via SMS (message frequency varies)",
+  "You can opt out anytime by replying STOP, or ask for help by replying HELP",
+  "SMS consent is optional and is never required to submit a form or receive a quote",
 ] as const;
 
 const RIGHTS = [
@@ -52,25 +53,6 @@ const RIGHTS = [
   { title: "Withdraw", body: "Revoke your consent at any time" },
   { title: "Delete", body: "Request deletion of your data" },
 ] as const;
-
-interface PolicySection {
-  id: string;
-  title: string;
-  content: ReactNode;
-}
-
-function BulletList({ items }: { items: readonly string[] }) {
-  return (
-    <ul className="mt-5 space-y-3">
-      {items.map((item) => (
-        <li key={item} className="flex gap-3">
-          <span aria-hidden="true" className="mt-2.5 size-1.5 shrink-0 rounded-full bg-brand" />
-          <span>{item}</span>
-        </li>
-      ))}
-    </ul>
-  );
-}
 
 const SECTIONS: readonly PolicySection[] = [
   {
@@ -116,6 +98,10 @@ const SECTIONS: readonly PolicySection[] = [
         </p>
         <p className="mt-3">We may share your information only in the following limited situations:</p>
         <BulletList items={SHARING} />
+        <p className="mt-5">
+          None of the above sharing includes SMS opt-in data or consent. Text messaging originator opt-in data
+          and consent will not be shared with any third parties.
+        </p>
       </>
     ),
   },
@@ -124,10 +110,12 @@ const SECTIONS: readonly PolicySection[] = [
     title: "SMS & Mobile Messaging Privacy",
     content: (
       <>
-        <p>If you provide your mobile number and opt in to receive SMS messages:</p>
+        <Callout>{SMS_NO_SHARING_STATEMENT}</Callout>
+        <p className="mt-5">If you provide your mobile number and opt in to receive SMS messages:</p>
         <BulletList items={SMS_POINTS} />
-        <p className="mt-5 rounded-xl border-l-4 border-brand bg-brand/5 px-4 py-3 text-ink">
-          Standard messaging rates may apply. Consent is not a condition of employment or service.
+        <p className="mt-5">
+          Message and data rates may apply. Consent is not a condition of employment or service. For full
+          details, see our <InlineLink href="/terms">SMS Terms &amp; Conditions</InlineLink>.
         </p>
       </>
     ),
@@ -159,13 +147,7 @@ const SECTIONS: readonly PolicySection[] = [
         </ul>
         <p className="mt-5">
           To exercise these rights, please contact us at{" "}
-          <a
-            href={`mailto:${PRIVACY_EMAIL}`}
-            className="font-semibold text-brand-deep underline decoration-brand-deep/30 underline-offset-4 hover:decoration-brand-deep"
-          >
-            {PRIVACY_EMAIL}
-          </a>
-          .
+          <InlineLink href={`mailto:${PRIVACY_EMAIL}`}>{PRIVACY_EMAIL}</InlineLink>.
         </p>
       </>
     ),
@@ -182,116 +164,36 @@ const SECTIONS: readonly PolicySection[] = [
   },
 ];
 
-const TOC_ITEMS = SECTIONS.map(({ id, title }) => ({ id, title }));
-
 export default function PrivacyPage() {
   return (
-    <PageTransition>
-      <PageHero
-        eyebrow="Privacy Policy"
-        title={
-          <>
-            Your privacy <span className="text-gradient">matters to us.</span>
-          </>
-        }
-        intro="Learn how we protect and manage your information."
-      >
-        <p className="text-sm font-semibold tracking-[0.18em] text-paper/60 uppercase">
-          Effective date: {EFFECTIVE_DATE}
-        </p>
-      </PageHero>
-
-      <section aria-label="Privacy policy" className="py-20 sm:py-24">
-        <div className="container-x grid gap-12 lg:grid-cols-[18rem_1fr] lg:gap-14">
-          <nav aria-label="On this page" className="hidden lg:block">
-            <SectionTocSidebar items={TOC_ITEMS} />
-          </nav>
-
-          <div className="min-w-0 max-w-3xl">
-            <SectionTocChips items={TOC_ITEMS} />
-            <div className="reveal text-lg leading-relaxed text-stone">
-              <p>
-                <strong className="text-ink">
-                  {COMPANY.legalName} (&quot;{COMPANY.shortName},&quot; &quot;we,&quot; &quot;us,&quot; or
-                  &quot;our&quot;)
-                </strong>{" "}
-                respects your privacy and is committed to protecting your personal information.
-              </p>
-              <p className="mt-4">
-                This Privacy Policy explains how we collect, use, disclose, and safeguard your information
-                when you use our website, services, or communicate with us, including via SMS text messages.
-                By using our services or providing your information, you agree to the practices described in
-                this policy.
-              </p>
-            </div>
-
-            <div className="mt-14 space-y-6">
-              {SECTIONS.map((section, index) => (
-                <article
-                  key={section.id}
-                  id={section.id}
-                  aria-labelledby={`${section.id}-title`}
-                  className={`${index % 2 === 0 ? "reveal-left" : "reveal-right"} card scroll-mt-36 p-7 hover:translate-y-0 sm:p-10 lg:scroll-mt-28`}
-                  style={cssVars({ "--d": 0 })}
-                >
-                  <div className="flex items-baseline gap-4">
-                    <span aria-hidden="true" className="font-display text-4xl font-black text-brand/25">
-                      {String(index + 1).padStart(2, "0")}
-                    </span>
-                    <h2 id={`${section.id}-title`} className="text-2xl font-extrabold sm:text-3xl">
-                      {section.title}
-                    </h2>
-                  </div>
-                  <div className="mt-5 leading-relaxed text-stone">{section.content}</div>
-                </article>
-              ))}
-            </div>
-
-            <aside
-              aria-labelledby="privacy-questions"
-              className="reveal relative mt-10 overflow-hidden rounded-[2rem] bg-[linear-gradient(135deg,var(--color-lapis)_0%,var(--color-brand-deep)_100%)] p-8 text-white sm:p-10"
-            >
-              <div
-                aria-hidden="true"
-                className="absolute inset-0 bg-[radial-gradient(60%_90%_at_100%_0%,rgb(20_179_245/0.5),transparent_70%)]"
-              />
-              <div className="relative">
-                <h2 id="privacy-questions" className="text-2xl font-extrabold sm:text-3xl">
-                  Questions About This Policy?
-                </h2>
-                <p className="mt-3 text-white/85">
-                  If you have any questions or concerns about this Privacy Policy, please contact us:
-                </p>
-                <address className="mt-6 grid gap-4 not-italic sm:grid-cols-3">
-                  <a href={`mailto:${PRIVACY_EMAIL}`} className="flex items-start gap-2 hover:underline">
-                    <MailIcon className="mt-0.5 size-5 shrink-0" />
-                    <span className="break-all">{PRIVACY_EMAIL}</span>
-                  </a>
-                  <a href={COMPANY.phone.href} className="flex items-start gap-2 hover:underline">
-                    <PhoneIcon className="mt-0.5 size-5 shrink-0" />
-                    {COMPANY.phone.display}
-                  </a>
-                  <span className="flex items-start gap-2">
-                    <PinIcon className="mt-0.5 size-5 shrink-0" />
-                    <span>
-                      {COMPANY.legalName}
-                      <br />
-                      {COMPANY.address.oneLine}
-                    </span>
-                  </span>
-                </address>
-              </div>
-            </aside>
-          </div>
-        </div>
-      </section>
-
-      <JsonLd
-        data={breadcrumbJsonLd([
-          { name: "Home", path: "/" },
-          { name: "Privacy Policy", path: "/privacy" },
-        ])}
-      />
-    </PageTransition>
+    <PolicyPage
+      eyebrow="Privacy Policy"
+      title={
+        <>
+          Your privacy <span className="text-gradient">matters to us.</span>
+        </>
+      }
+      intro="Learn how we protect and manage your information."
+      effectiveDate={EFFECTIVE_DATE}
+      path="/privacy"
+      contactHeading="Questions About This Policy?"
+      sections={SECTIONS}
+      lead={
+        <>
+          <p>
+            <strong className="text-ink">
+              {COMPANY.legalName} (&quot;{COMPANY.shortName},&quot; &quot;we,&quot; &quot;us,&quot; or
+              &quot;our&quot;)
+            </strong>{" "}
+            respects your privacy and is committed to protecting your personal information.
+          </p>
+          <p className="mt-4">
+            This Privacy Policy explains how we collect, use, disclose, and safeguard your information when
+            you use our website, services, or communicate with us, including via SMS text messages. By using
+            our services or providing your information, you agree to the practices described in this policy.
+          </p>
+        </>
+      }
+    />
   );
 }

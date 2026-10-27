@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useActionState, useEffect, useRef, type InputHTMLAttributes } from "react";
 import { submitQuote } from "@/app/contact/actions";
 import { INITIAL_QUOTE_STATE, type QuoteField } from "@/lib/quote-state";
+import { SMS_CONSENT_TEXT } from "@/lib/sms";
 import { ArrowIcon, CheckIcon } from "./icons";
 
 type FieldName = QuoteField;
@@ -57,6 +58,36 @@ function Field({ name, label, error, defaultValue, isRequired, isMultiline, hint
           </p>
         )
       )}
+    </div>
+  );
+}
+
+const LEGAL_LINK_CLASS = "whitespace-nowrap font-semibold text-brand-deep underline underline-offset-2";
+
+/** Opens in a new tab so reading the policy never wipes what the visitor typed. */
+function PolicyLink({ href, children }: { href: string; children: string }) {
+  return (
+    <a href={href} target="_blank" rel="noopener noreferrer" className={LEGAL_LINK_CLASS}>
+      {children}
+    </a>
+  );
+}
+
+/** Optional SMS opt-in required by carriers (TCR). Never pre-checked, never required. */
+function SmsConsent({ defaultChecked }: { defaultChecked: boolean }) {
+  return (
+    <div className="flex gap-3 rounded-2xl bg-paper-2 p-4">
+      <input
+        id="quote-smsConsent"
+        name="smsConsent"
+        type="checkbox"
+        defaultChecked={defaultChecked}
+        className="mt-1 size-5 shrink-0 cursor-pointer accent-brand"
+      />
+      <label htmlFor="quote-smsConsent" className="cursor-pointer text-sm leading-relaxed text-stone">
+        {SMS_CONSENT_TEXT} Learn more on our <PolicyLink href="/privacy">Privacy Policy</PolicyLink> and{" "}
+        <PolicyLink href="/terms">Terms and Conditions</PolicyLink>.
+      </label>
     </div>
   );
 }
@@ -160,6 +191,8 @@ export function QuoteForm() {
         isMultiline
       />
 
+      <SmsConsent defaultChecked={values.smsConsent === "on"} />
+
       {/* Honeypot: hidden from people and assistive tech */}
       <div aria-hidden="true" className="absolute -left-[9999px] h-px w-px overflow-hidden">
         <label htmlFor="quote-website">Website</label>
@@ -180,13 +213,19 @@ export function QuoteForm() {
         </p>
       </div>
 
-      <p className="text-xs leading-relaxed text-stone">
-        By sending this form you agree to our{" "}
-        <Link href="/privacy" className="font-semibold text-brand-deep underline underline-offset-2">
-          Privacy Policy
-        </Link>
-        . We only use your details to answer your request and never sell them.
-      </p>
+      <div className="border-t border-ink/8 pt-5">
+        <nav aria-label="Legal" className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
+          <Link href="/privacy" className={LEGAL_LINK_CLASS}>
+            Privacy Policy
+          </Link>
+          <Link href="/terms" className={LEGAL_LINK_CLASS}>
+            SMS Terms &amp; Conditions
+          </Link>
+        </nav>
+        <p className="mt-2 text-xs text-stone">
+          We only use your details to answer your request and never sell them.
+        </p>
+      </div>
     </form>
   );
 }
