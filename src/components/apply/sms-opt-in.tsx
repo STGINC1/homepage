@@ -84,23 +84,13 @@ export function SmsOptIn() {
             className="cursor-pointer leading-relaxed"
           >
             {SMS_CONSENT_TEXT} Learn more on our{" "}
-            <a
-              href="/privacy"
-              target="_blank"
-              rel="noopener noreferrer"
-              className={LINK_CLASS}
-            >
+            <Link href="/privacy" className={LINK_CLASS}>
               Privacy Policy
-            </a>{" "}
+            </Link>{" "}
             and{" "}
-            <a
-              href="/terms"
-              target="_blank"
-              rel="noopener noreferrer"
-              className={LINK_CLASS}
-            >
+            <Link href="/terms" className={LINK_CLASS}>
               Terms and Conditions
-            </a>
+            </Link>
             .
           </label>
         </div>

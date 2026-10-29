@@ -1,7 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState, useEffect, useRef, type InputHTMLAttributes } from "react";
+import {
+  useActionState,
+  useEffect,
+  useRef,
+  type InputHTMLAttributes,
+} from "react";
 import { submitQuote } from "@/app/contact/actions";
 import { INITIAL_QUOTE_STATE, type QuoteField } from "@/lib/quote-state";
 import { SMS_CONSENT_TEXT } from "@/lib/sms";
@@ -20,7 +25,16 @@ interface FieldProps {
   inputProps?: InputHTMLAttributes<HTMLInputElement>;
 }
 
-function Field({ name, label, error, defaultValue, isRequired, isMultiline, hint, inputProps }: FieldProps) {
+function Field({
+  name,
+  label,
+  error,
+  defaultValue,
+  isRequired,
+  isMultiline,
+  hint,
+  inputProps,
+}: FieldProps) {
   const id = `quote-${name}`;
   const describedBy = error ? `${id}-error` : hint ? `${id}-hint` : undefined;
   const shared = {
@@ -43,7 +57,12 @@ function Field({ name, label, error, defaultValue, isRequired, isMultiline, hint
         )}
       </label>
       {isMultiline ? (
-        <textarea {...shared} rows={5} maxLength={2000} className="field resize-y" />
+        <textarea
+          {...shared}
+          rows={5}
+          maxLength={2000}
+          className="field resize-y"
+        />
       ) : (
         <input {...shared} {...inputProps} className="field" />
       )}
@@ -62,14 +81,14 @@ function Field({ name, label, error, defaultValue, isRequired, isMultiline, hint
   );
 }
 
-const LEGAL_LINK_CLASS = "whitespace-nowrap font-semibold text-brand-deep underline underline-offset-2";
+const LEGAL_LINK_CLASS =
+  "whitespace-nowrap font-semibold text-brand-deep underline underline-offset-2";
 
-/** Opens in a new tab so reading the policy never wipes what the visitor typed. */
 function PolicyLink({ href, children }: { href: string; children: string }) {
   return (
-    <a href={href} target="_blank" rel="noopener noreferrer" className={LEGAL_LINK_CLASS}>
+    <Link href={href} className={LEGAL_LINK_CLASS}>
       {children}
-    </a>
+    </Link>
   );
 }
 
@@ -84,8 +103,12 @@ function SmsConsent({ defaultChecked }: { defaultChecked: boolean }) {
         defaultChecked={defaultChecked}
         className="mt-1 size-5 shrink-0 cursor-pointer accent-brand"
       />
-      <label htmlFor="quote-smsConsent" className="cursor-pointer text-sm leading-relaxed text-stone">
-        {SMS_CONSENT_TEXT} Learn more on our <PolicyLink href="/privacy">Privacy Policy</PolicyLink> and{" "}
+      <label
+        htmlFor="quote-smsConsent"
+        className="cursor-pointer text-sm leading-relaxed text-stone"
+      >
+        {SMS_CONSENT_TEXT} Learn more on our{" "}
+        <PolicyLink href="/privacy">Privacy Policy</PolicyLink> and{" "}
         <PolicyLink href="/terms">Terms and Conditions</PolicyLink>.
       </label>
     </div>
@@ -101,7 +124,11 @@ function SuccessPanel({ message }: { message: string }) {
       <span className="grid size-12 place-items-center rounded-full bg-brand text-white">
         <CheckIcon className="size-6" />
       </span>
-      <h2 ref={headingRef} tabIndex={-1} className="text-2xl font-extrabold outline-none">
+      <h2
+        ref={headingRef}
+        tabIndex={-1}
+        className="text-2xl font-extrabold outline-none"
+      >
         Request received
       </h2>
       <p className="text-stone">{message}</p>
@@ -110,22 +137,33 @@ function SuccessPanel({ message }: { message: string }) {
 }
 
 export function QuoteForm() {
-  const [state, formAction, isPending] = useActionState(submitQuote, INITIAL_QUOTE_STATE);
+  const [state, formAction, isPending] = useActionState(
+    submitQuote,
+    INITIAL_QUOTE_STATE,
+  );
   const formRef = useRef<HTMLFormElement>(null);
 
   // After a failed submit, move focus to the first field that needs fixing.
   useEffect(() => {
     if (state.status !== "error") return;
-    formRef.current?.querySelector<HTMLElement>('[aria-invalid="true"]')?.focus();
+    formRef.current
+      ?.querySelector<HTMLElement>('[aria-invalid="true"]')
+      ?.focus();
   }, [state]);
 
-  if (state.status === "success") return <SuccessPanel message={state.message} />;
+  if (state.status === "success")
+    return <SuccessPanel message={state.message} />;
 
   const errors = state.status === "error" ? state.fieldErrors : {};
   const values = state.status === "error" ? state.values : {};
 
   return (
-    <form ref={formRef} action={formAction} className="relative grid gap-5" aria-describedby="quote-status">
+    <form
+      ref={formRef}
+      action={formAction}
+      className="relative grid gap-5"
+      aria-describedby="quote-status"
+    >
       <div className="grid gap-5 sm:grid-cols-2">
         <Field
           name="name"
@@ -194,9 +232,18 @@ export function QuoteForm() {
       <SmsConsent defaultChecked={values.smsConsent === "on"} />
 
       {/* Honeypot: hidden from people and assistive tech */}
-      <div aria-hidden="true" className="absolute -left-[9999px] h-px w-px overflow-hidden">
+      <div
+        aria-hidden="true"
+        className="absolute -left-[9999px] h-px w-px overflow-hidden"
+      >
         <label htmlFor="quote-website">Website</label>
-        <input id="quote-website" name="website" type="text" tabIndex={-1} autoComplete="off" />
+        <input
+          id="quote-website"
+          name="website"
+          type="text"
+          tabIndex={-1}
+          autoComplete="off"
+        />
       </div>
 
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
@@ -206,15 +253,24 @@ export function QuoteForm() {
           className="btn btn-primary group disabled:cursor-wait disabled:opacity-70"
         >
           {isPending ? "Sending…" : "Send quote request"}
-          {!isPending && <ArrowIcon className="size-4 transition-transform group-hover:translate-x-1" />}
+          {!isPending && (
+            <ArrowIcon className="size-4 transition-transform group-hover:translate-x-1" />
+          )}
         </button>
-        <p id="quote-status" aria-live="polite" className="text-sm font-medium text-red-700">
+        <p
+          id="quote-status"
+          aria-live="polite"
+          className="text-sm font-medium text-red-700"
+        >
           {state.status === "error" ? state.message : ""}
         </p>
       </div>
 
       <div className="border-t border-ink/8 pt-5">
-        <nav aria-label="Legal" className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
+        <nav
+          aria-label="Legal"
+          className="flex flex-wrap gap-x-6 gap-y-2 text-sm"
+        >
           <Link href="/privacy" className={LEGAL_LINK_CLASS}>
             Privacy Policy
           </Link>
