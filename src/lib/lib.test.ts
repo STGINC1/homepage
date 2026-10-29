@@ -153,3 +153,42 @@ describe("company emails", () => {
     expect(organizationJsonLd().email).toBe("admin@stgincs.com");
   });
 });
+
+describe("parseSmsConsent (apply page opt-in)", () => {
+  it("accepts a checked box with a mobile number and normalizes it", async () => {
+    const { parseSmsConsent } = await import("./sms-consent");
+    const result = parseSmsConsent({ phone: "(513) 555-0199", smsConsent: "on", website: "" });
+    expect(result.ok).toBe(true);
+    if (result.ok) expect(result.data.phone).toBe("5135550199");
+  });
+
+  it("rejects an unchecked box, so consent is never assumed", async () => {
+    const { parseSmsConsent } = await import("./sms-consent");
+    const result = parseSmsConsent({ phone: "5135550199", smsConsent: "", website: "" });
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(Object.keys(result.fieldErrors)).toEqual(["smsConsent"]);
+  });
+
+  it("asks for a valid phone number", async () => {
+    const { parseSmsConsent } = await import("./sms-consent");
+    const blank = parseSmsConsent({ phone: "", smsConsent: "on", website: "" });
+    const short = parseSmsConsent({ phone: "123", smsConsent: "on", website: "" });
+    expect(blank.ok || short.ok).toBe(false);
+    if (!blank.ok) expect(blank.fieldErrors.phone).toBeDefined();
+    if (!short.ok) expect(short.fieldErrors.phone).toBeDefined();
+  });
+
+  it("records the number, time and exact consent wording", async () => {
+    const { formatSmsConsentText } = await import("./sms-consent");
+    const { SMS_CONSENT_TEXT } = await import("./sms");
+    const text = formatSmsConsentText({
+      phone: "5135550199",
+      receivedAt: new Date("2026-10-29T15:00:00Z"),
+      ip: null,
+      userAgent: null,
+    });
+    expect(text).toContain("Mobile number: 5135550199");
+    expect(text).toContain("Opted in at: 2026-10-29T15:00:00.000Z");
+    expect(text).toContain(SMS_CONSENT_TEXT);
+  });
+});

@@ -5,18 +5,21 @@ const PHONE_DIGITS = /^\+?1?\d{10}$/;
 
 const trimmed = (max: number) => z.string().trim().max(max);
 
+/** US phone number, digits only after parsing. Blank is allowed. */
+export const optionalUsPhone = z
+  .string()
+  .trim()
+  .transform((value) => value.replace(/[\s().-]/g, ""))
+  .refine((value) => value === "" || PHONE_DIGITS.test(value), {
+    message: "Please enter a 10-digit US phone number.",
+  });
+
 export const quoteSchema = z
   .object({
     name: trimmed(80).min(2, "Please enter your name."),
     company: trimmed(120).optional().default(""),
     email: z.email("Please enter a valid email address.").max(160),
-    phone: z
-      .string()
-      .trim()
-      .transform((value) => value.replace(/[\s().-]/g, ""))
-      .refine((value) => value === "" || PHONE_DIGITS.test(value), {
-        message: "Please enter a 10-digit US phone number.",
-      }),
+    phone: optionalUsPhone,
     origin: trimmed(120).min(2, "Where does the load pick up?"),
     destination: trimmed(120).min(2, "Where does the load deliver?"),
     pickupDate: z

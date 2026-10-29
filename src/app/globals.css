@@ -307,6 +307,9 @@
 .zeus-apply-bg {
   --zeus-apply-bg: #ffffff;
   --zeus-apply-fg: #64748b;
+  --zeus-apply-heading: #111827;
+  --zeus-apply-border: #e5e7eb;
+  --zeus-apply-link: #4f46e5;
   background-color: var(--zeus-apply-bg);
   color: var(--zeus-apply-fg);
 }
@@ -315,5 +318,8 @@
   .zeus-apply-bg {
     --zeus-apply-bg: #0f1117;
     --zeus-apply-fg: #9ca3af;
+    --zeus-apply-heading: #f3f4f6;
+    --zeus-apply-border: #1f2937;
+    --zeus-apply-link: #818cf8;
   }
 }

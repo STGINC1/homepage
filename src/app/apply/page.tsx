@@ -1,4 +1,5 @@
 import { ApplicationEmbed } from "@/components/apply/application-embed";
+import { SmsOptIn } from "@/components/apply/sms-opt-in";
 import { ArrowIcon, MailIcon, PhoneIcon } from "@/components/icons";
 import { JsonLd } from "@/components/json-ld";
 import { PageHero } from "@/components/page-hero";
@@ -58,6 +59,7 @@ export default function ApplyPage() {
           Driver application
         </h2>
         <ApplicationEmbed />
+        <SmsOptIn />
       </section>
 
       <section
