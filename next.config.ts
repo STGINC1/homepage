@@ -14,6 +14,9 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   // Web3Forms' free plan only accepts browser sends, so the (public) key ships to the browser.
   env: { WEB3FORMS_KEY: process.env.WEB3FORMS_KEY ?? "" },
+  experimental: {
+    agentUpgrade: "security",
+  },
   images: {
     formats: ["image/avif", "image/webp"],
     qualities: [75],
