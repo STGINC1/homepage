@@ -1,3 +1,6 @@
+import type { ReadyToSend } from "./send-email";
+import { COMPANY } from "./site";
+
 /**
  * Form state shared by the quote form (browser) and its server action.
  * Kept free of zod so the validation library never ships to the browser.
@@ -29,3 +32,20 @@ export type QuoteFormState =
     };
 
 export const INITIAL_QUOTE_STATE: QuoteFormState = { status: "idle" };
+
+/** What the server action returns: a finished state, or a valid request for the browser to email. */
+export type QuoteActionResult = QuoteFormState | ReadyToSend<Record<string, string>>;
+
+export const QUOTE_SUCCESS: QuoteFormState = {
+  status: "success",
+  message: "Thanks! Your request is in. We'll get back to you shortly, usually the same business day.",
+};
+
+export function quoteSendFailed(values: Record<string, string>): QuoteFormState {
+  return {
+    status: "error",
+    message: `We couldn't send your request right now. Please call us at ${COMPANY.phone.display}. Sorry for the trouble.`,
+    fieldErrors: {},
+    values,
+  };
+}

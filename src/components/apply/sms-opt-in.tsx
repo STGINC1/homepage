@@ -3,8 +3,18 @@
 import Link from "next/link";
 import { useActionState } from "react";
 import { saveSmsConsent } from "@/app/apply/actions";
-import { INITIAL_SMS_CONSENT_STATE } from "@/lib/sms-consent-state";
-import { SMS_CONSENT_TEXT } from "@/lib/sms";
+import { withBrowserDelivery } from "@/lib/send-email";
+import {
+  INITIAL_SMS_CONSENT_STATE,
+  SMS_CONSENT_SUCCESS,
+  smsConsentSendFailed,
+} from "@/lib/sms-consent-state";
+import { SmsConsentWording } from "@/components/sms-consent-wording";
+
+const saveAndSend = withBrowserDelivery(saveSmsConsent, "sms-consent", {
+  sent: SMS_CONSENT_SUCCESS,
+  failed: smsConsentSendFailed,
+});
 
 const LINK_CLASS =
   "font-semibold text-[var(--zeus-apply-link)] underline underline-offset-2";
@@ -16,7 +26,7 @@ const LINK_CLASS =
  */
 export function SmsOptIn() {
   const [state, formAction, isPending] = useActionState(
-    saveSmsConsent,
+    saveAndSend,
     INITIAL_SMS_CONSENT_STATE,
   );
 
@@ -83,7 +93,7 @@ export function SmsOptIn() {
             htmlFor="sms-consent"
             className="cursor-pointer leading-relaxed"
           >
-            {SMS_CONSENT_TEXT} Learn more on our{" "}
+            <SmsConsentWording /> Learn more on our{" "}
             <Link href="/privacy" className={LINK_CLASS}>
               Privacy Policy
             </Link>{" "}

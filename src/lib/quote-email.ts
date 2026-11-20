@@ -1,7 +1,5 @@
 import type { QuoteInput } from "./quote-schema";
-import { oneLine, sendEmail, type SendResult } from "./send-email";
-
-export type { SendResult } from "./send-email";
+import { type EmailMessage, oneLine } from "./send-email";
 
 export function formatQuoteText(quote: QuoteInput): string {
   const lines: [string, string][] = [
@@ -18,14 +16,11 @@ export function formatQuoteText(quote: QuoteInput): string {
   return `New quote request from the website\n\n${body}\n\nDetails:\n${quote.details || "—"}\n`;
 }
 
-/** Delivers a quote request to the company inbox. */
-export function sendQuote(quote: QuoteInput): Promise<SendResult> {
-  return sendEmail(
-    {
-      subject: `Quote request: ${oneLine(quote.origin)} → ${oneLine(quote.destination)}`,
-      text: formatQuoteText(quote),
-      replyTo: quote.email,
-    },
-    "quote",
-  );
+/** The email the company inbox receives for a quote request. */
+export function quoteEmail(quote: QuoteInput): EmailMessage {
+  return {
+    subject: `Quote request: ${oneLine(quote.origin)} → ${oneLine(quote.destination)}`,
+    text: formatQuoteText(quote),
+    replyTo: quote.email,
+  };
 }

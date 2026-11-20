@@ -22,7 +22,7 @@ Copy `.env.example` to `.env.local` (or set the same variables in your host):
 | Variable | Why |
 | --- | --- |
 | `NEXT_PUBLIC_SITE_URL` | Your real domain. Used for canonical URLs, sitemap and social previews. |
-| `RESEND_API_KEY`, `QUOTE_TO_EMAIL`, `QUOTE_FROM_EMAIL` | Sends quote-form requests by email through [Resend](https://resend.com). Until set, the form asks visitors to call. |
+| `WEB3FORMS_KEY` | Emails quote requests and SMS opt-ins to the inbox the key was created for, through [Web3Forms](https://web3forms.com). Sent from the visitor's browser (the free plan blocks server-side sends). Until set, the forms ask visitors to call. |
 
 ## Where things live
 

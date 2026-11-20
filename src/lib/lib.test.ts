@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { formDataToObject, parseQuote } from "./quote-schema";
 import { createRateLimiter } from "./rate-limit";
 import { faqJsonLd, organizationJsonLd, serializeJsonLd } from "./seo";
-import { formatQuoteText } from "./send-quote";
+import { formatQuoteText } from "./quote-email";
 import { COMPANY } from "./site";
 
 const VALID = {
@@ -133,7 +133,12 @@ describe("SMS compliance text", () => {
       "SMS opt-in and phone numbers collected for SMS communication purposes will not be shared with any third party and affiliates for marketing purposes.",
     );
     expect(SMS_CONSENT_TEXT).toBe(
-      `By checking this box, you agree to receive Conversational TEXT messages from ${COMPANY.legalName} at the phone number provided above. You may reply STOP to opt-out at any time. For assistance reply HELP. Messages and data rates may apply. Message frequency will vary.`,
+      "By checking this box, you agree to receive Conversational TEXT messages. Example: " +
+        "Replies to your quote requests and questions; Pickup, delivery and load status updates; " +
+        "Dispatch, scheduling and appointment coordination; Driver recruiting and employment follow-ups " +
+        `from ${COMPANY.legalName} at the phone number provided above. You may reply STOP to opt-out at any time. ` +
+        "For assistance reply HELP. Messages and data rates may apply. Message frequency will vary. " +
+        "For example, you may receive up to 10 SMS messages per week related to your quote requests, shipments, and dispatch updates.",
     );
   });
 });

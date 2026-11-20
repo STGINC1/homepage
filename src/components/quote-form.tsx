@@ -8,11 +8,22 @@ import {
   type InputHTMLAttributes,
 } from "react";
 import { submitQuote } from "@/app/contact/actions";
-import { INITIAL_QUOTE_STATE, type QuoteField } from "@/lib/quote-state";
-import { SMS_CONSENT_TEXT } from "@/lib/sms";
+import {
+  INITIAL_QUOTE_STATE,
+  QUOTE_SUCCESS,
+  type QuoteField,
+  quoteSendFailed,
+} from "@/lib/quote-state";
+import { withBrowserDelivery } from "@/lib/send-email";
+import { SmsConsentWording } from "@/components/sms-consent-wording";
 import { ArrowIcon, CheckIcon } from "./icons";
 
 type FieldName = QuoteField;
+
+const submitAndSend = withBrowserDelivery(submitQuote, "quote", {
+  sent: QUOTE_SUCCESS,
+  failed: quoteSendFailed,
+});
 
 interface FieldProps {
   name: FieldName;
@@ -107,7 +118,7 @@ function SmsConsent({ defaultChecked }: { defaultChecked: boolean }) {
         htmlFor="quote-smsConsent"
         className="cursor-pointer text-sm leading-relaxed text-stone"
       >
-        {SMS_CONSENT_TEXT} Learn more on our{" "}
+        <SmsConsentWording /> Learn more on our{" "}
         <PolicyLink href="/privacy">Privacy Policy</PolicyLink> and{" "}
         <PolicyLink href="/terms">Terms and Conditions</PolicyLink>.
       </label>
@@ -138,7 +149,7 @@ function SuccessPanel({ message }: { message: string }) {
 
 export function QuoteForm() {
   const [state, formAction, isPending] = useActionState(
-    submitQuote,
+    submitAndSend,
     INITIAL_QUOTE_STATE,
   );
   const formRef = useRef<HTMLFormElement>(null);
